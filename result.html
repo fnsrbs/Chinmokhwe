@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>쿠폰 결과 확인</title>
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; text-align: center; padding-top: 50px; background: #f0f2f5; margin: 0; }
+        .card { background: white; margin: 0 auto; width: 85%; max-width: 400px; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h1 { color: #007bff; font-size: 22px; }
+        #prize { font-size: 28px; font-weight: bold; color: #e63946; margin: 20px 0; min-height: 40px; }
+        .input-group { margin-top: 20px; padding-top: 20px; border-top: 1px dashed #ccc; }
+        input { padding: 10px; width: 60%; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; text-transform: uppercase; }
+        
+        /* 버튼 공통 스타일 */
+        button { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        .btn-check { background: #007bff; color: white; }
+        /* 다시 스캔하기 버튼 스타일 */
+        .btn-retry { 
+            margin-top: 30px; 
+            width: 100%; 
+            background: #6c757d; 
+            color: white; 
+            border-radius: 30px;
+            padding: 15px;
+        }
+
+        #msg { color: #666; margin-bottom: 10px; }
+        input::placeholder { color: #bbb; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div id="result-section">
+            <h1>🎁 쿠폰 결과 🎁</h1>
+            <div id="msg">데이터 조회 중...</div>
+            <div id="prize"></div>
+            <p id="sub-msg" style="color: #888; font-size: 14px; display:none;">본 화면을 담당자에게 보여주세요.</p>
+        </div>
+
+        <div class="input-group">
+            <p style="font-size: 13px; color: #999;">번호가 인식되지 않나요?</p>
+            <input type="text" id="manual-num" placeholder="직접 번호를 입력하세요.">
+            <button class="btn-check" onclick="checkManual()">확인</button>
+        </div>
+
+        <button class="btn-retry" onclick="location.href='index.html'">
+            📸 다른 카드 스캔하기
+        </button>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzEyV28nj1wHeTCAcOMtQrmOkoMk7SvZiMlFEmNZUC2U2x_bQjJ4q9WZnHXFFEmyDmv/exec";
+        const inputEl = document.getElementById('manual-num');
+
+        window.handleResponse = function(data) {
+            const msgEl = document.getElementById('msg');
+            const prizeEl = document.getElementById('prize');
+            const subMsgEl = document.getElementById('sub-msg');
+
+            msgEl.style.display = 'none';
+            subMsgEl.style.display = 'block';
+
+            if(data.status === "success") {
+                prizeEl.innerText = data.prize;
+                prizeEl.style.color = "#e63946";
+            } else if(data.status === "already_used") {
+                prizeEl.innerText = "이미 사용된 쿠폰입니다.";
+                prizeEl.style.color = "#999";
+            } else {
+                prizeEl.innerText = "없는 번호입니다.";
+                prizeEl.style.color = "#999";
+            }
+        };
+
+        function fetchPrize(n) {
+            if(!n) return;
+            document.getElementById('msg').style.display = 'block';
+            document.getElementById('msg').innerText = n + "번 번호 조회 중...";
+            document.getElementById('prize').innerText = "";
+            document.getElementById('sub-msg').style.display = 'none';
+
+            const script = document.createElement('script');
+            script.src = `${SCRIPT_URL}?num=${n.toUpperCase()}&callback=handleResponse`;
+            document.body.appendChild(script);
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const autoNum = params.get('num');
+        
+        if (autoNum) {
+            inputEl.placeholder = autoNum;
+            fetchPrize(autoNum);
+        } else {
+            document.getElementById('msg').innerText = "쿠폰을 스캔해주세요.";
+        }
+
+        function checkManual() {
+            const inputNum = inputEl.value.trim() || (inputEl.placeholder !== "직접 번호를 입력하세요." ? inputEl.placeholder : "");
+            if (inputNum) {
+                fetchPrize(inputNum);
+            } else {
+                alert("번호를 입력해주세요!");
+            }
+        }
+    </script>
+</body>
+</html>
