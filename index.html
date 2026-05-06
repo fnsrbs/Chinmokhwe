@@ -8,39 +8,29 @@
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.0/dist/mindar-image-aframe.prod.js"></script>
     
     <style>
-        body { margin: 0; overflow: hidden; width: 100vw; height: 100vh; position: fixed; background-color: #000; }
-        
-        /* 미리보기 배경 이미지 설정 */
+        body { margin: 0; overflow: hidden; width: 100vw; height: 100vh; position: fixed; }
+        /* 2. 미리보기 이미지(배경) 추가 */
         #ar-scene-container { 
             width: 100%; 
             height: 100%; 
-            /* 여기에 보물지도 이미지 경로를 넣으세요 */
-            background-image: url('./map_bg.jpg'); 
+            background-image: url('./images/map_bg.jpg'); /* 여기에 보물지도 파일 경로 입력 */
             background-size: cover;
             background-position: center;
         }
-
         #ui {
             position: fixed; top: 30px; left: 50%; transform: translateX(-50%);
-            color: white; background: rgba(88, 47, 14, 0.85); /* 보물지도 느낌의 갈색톤 */
+            color: white; background: rgba(0,0,0,0.7);
             padding: 12px 24px; border-radius: 30px; text-align: center;
-            font-family: 'Nanum Gothic', sans-serif; z-index: 1000; pointer-events: none;
+            font-family: sans-serif; z-index: 1000; pointer-events: none;
             font-size: 16px; font-weight: bold; width: 80%; max-width: 300px;
-            border: 2px solid #dda15e;
         }
-
-        /* 스캔 안내 문구 애니메이션 */
-        .found { background: rgba(40, 167, 69, 0.9) !important; animation: pulse 0.5s infinite alternate; }
+        .found { background: rgba(0, 123, 255, 0.9) !important; animation: pulse 0.5s infinite alternate; }
         @keyframes pulse { from { transform: translateX(-50%) scale(1); } to { transform: translateX(-50%) scale(1.05); } }
-
-        /* AR 실행 시 배경 이미지를 가리지 않도록 설정 */
-        a-scene { width: 100%; height: 100%; opacity: 0; transition: opacity 1s; }
-        a-scene.v-visible { opacity: 1; }
     </style>
 </head>
 <body>
 
-    <div id="ui">보물 카드를 카메라로 비춰보세요!</div>
+    <div id="ui">쿠폰을 찾아 카메라로 비춰보세요</div>
 
     <div id="ar-scene-container">
         <a-scene 
@@ -51,17 +41,13 @@
             color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights">
             
             <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
         </a-scene>
     </div>
 
     <script>
         const sceneEl = document.querySelector('#main-scene');
         const ui = document.querySelector('#ui');
-
-        // 카메라가 준비되면 장면을 부드럽게 표시
-        sceneEl.addEventListener("renderstart", () => {
-            sceneEl.classList.add("v-visible");
-        });
 
         const SECRET_CODES = [
             "K9F7", "W6P1", "H8J4", "P5B2", "C4A1", "D2Y7", "G8M5", "X9P2", "R1C4", "T5H9",
@@ -83,7 +69,8 @@
             
             entity.addEventListener("targetFound", () => {
                 const couponCode = SECRET_CODES[i];
-                ui.innerText = `✨ 보물 발견! 잠시만 기다리세요... ✨`;
+                
+                ui.innerText = `🎉 쿠폰 발견! 🎉`;
                 ui.classList.add("found");
                 
                 setTimeout(() => {
