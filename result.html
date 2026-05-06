@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>쿠폰 결과 확인</title>
+    <title>보물 결과 확인</title>
     <style>
         body { font-family: 'Malgun Gothic', sans-serif; text-align: center; padding-top: 50px; background: #f0f2f5; margin: 0; }
         .card { background: white; margin: 0 auto; width: 85%; max-width: 400px; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
@@ -32,20 +32,20 @@
 <body>
     <div class="card">
         <div id="result-section">
-            <h1>🎁 쿠폰 결과 🎁</h1>
-            <div id="msg">데이터 조회 중...</div>
+            <h1>🪙 보물 결과 🪙</h1>
+            <div id="msg">보물 조회 중...</div>
             <div id="prize"></div>
             <p id="sub-msg" style="color: #888; font-size: 14px; display:none;">본 화면을 담당자에게 보여주세요.</p>
         </div>
 
         <div class="input-group">
-            <p style="font-size: 13px; color: #999;">번호가 인식되지 않나요?</p>
-            <input type="text" id="manual-num" placeholder="직접 번호를 입력하세요.">
+            <p style="font-size: 13px; color: #999;">보물이 인식되지 않나요?</p>
+            <input type="text" id="manual-num" placeholder="직접 보물을 입력하세요.">
             <button class="btn-check" onclick="checkManual()">확인</button>
         </div>
 
         <button class="btn-retry" onclick="location.href='index.html'">
-            📸 다른 카드 스캔하기
+            📸 다른 보물 스캔하기
         </button>
     </div>
 
@@ -65,10 +65,10 @@
                 prizeEl.innerText = data.prize;
                 prizeEl.style.color = "#e63946";
             } else if(data.status === "already_used") {
-                prizeEl.innerText = "이미 사용된 쿠폰입니다.";
+                prizeEl.innerText = "이미 누군가 찾은 보물입니다.";
                 prizeEl.style.color = "#999";
             } else {
-                prizeEl.innerText = "없는 번호입니다.";
+                prizeEl.innerText = "없는 보물입니다.";
                 prizeEl.style.color = "#999";
             }
         };
@@ -76,7 +76,7 @@
         function fetchPrize(n) {
             if(!n) return;
             document.getElementById('msg').style.display = 'block';
-            document.getElementById('msg').innerText = n + "번 번호 조회 중...";
+            document.getElementById('msg').innerText = n + "번 보물 조회 중...";
             document.getElementById('prize').innerText = "";
             document.getElementById('sub-msg').style.display = 'none';
 
@@ -92,7 +92,7 @@
             inputEl.placeholder = autoNum;
             fetchPrize(autoNum);
         } else {
-            document.getElementById('msg').innerText = "쿠폰을 스캔해주세요.";
+            document.getElementById('msg').innerText = "보물을 스캔해주세요.";
         }
 
         function checkManual() {
