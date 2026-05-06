@@ -27,7 +27,7 @@
 </head>
 <body>
 
-    <div id="ui">쿠폰을 찾아 카메라로 비춰보세요</div>
+    <div id="ui">보물을 찾아 카메라로 비춰보세요</div>
 
     <div id="ar-scene-container">
         <a-scene 
@@ -67,7 +67,7 @@
             entity.addEventListener("targetFound", () => {
                 const couponCode = SECRET_CODES[i];
                 
-                ui.innerText = `🎉 쿠폰 발견! 🎉`;
+                ui.innerText = `🎉 보물 발견! 🎉`;
                 ui.classList.add("found");
                 
                 setTimeout(() => {
