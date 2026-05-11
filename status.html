@@ -3,87 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yongin Chinmokhwe - 실시간 현황</title>
+    <title>Yongin Chinmokhwe - 보물 현황</title>
     <style>
-        body { font-family: 'Malgun Gothic', sans-serif; text-align: center; background: #f4f1ea; margin: 0; padding: 20px; }
-        h1 { color: #582f0e; margin-bottom: 30px; }
+        body { font-family: 'Malgun Gothic', sans-serif; text-align: center; background: #f4f1ea; margin: 0; padding: 15px; }
+        h1 { color: #582f0e; font-size: 20px; margin-bottom: 20px; }
+        
         .grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); 
-            gap: 15px; max-width: 1000px; margin: 0 auto; 
+            /* 모바일 기본 3열 구성 */
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 10px; 
+            max-width: 600px; 
+            margin: 0 auto; 
         }
+
         .treasure-card { 
-            position: relative; background: white; border-radius: 10px; 
-            padding: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
-            border: 2px solid #ddd;
+            position: relative; background: white; border-radius: 8px; 
+            padding: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            border: 1px solid #ddd;
         }
-        .treasure-card img { width: 100%; border-radius: 5px; transition: 0.3s; }
-        .treasure-name { font-size: 12px; font-weight: bold; margin-top: 8px; color: #333; }
+
+        .treasure-card img { width: 100%; border-radius: 4px; display: block; }
+        .treasure-name { font-size: 11px; font-weight: bold; margin-top: 5px; color: #333; }
         
-        /* 발견된 보물 스타일 */
-        .found img { filter: grayscale(1); opacity: 0.4; }
+        /* 발견된 보물 처리 (X 표시) */
+        .found img { filter: grayscale(1); opacity: 0.3; }
         .found::after {
-            content: '❌'; position: absolute; top: 35%; left: 50%;
-            transform: translate(-50%, -50%); font-size: 40px; z-index: 2;
+            content: '❌'; position: absolute; top: 30%; left: 50%;
+            transform: translate(-50%, -50%); font-size: 35px; z-index: 2;
         }
+        
         .discovery-time { 
-            font-size: 10px; color: #e63946; font-weight: bold; 
-            margin-top: 4px; height: 14px; 
+            font-size: 9px; color: #e63946; font-weight: bold; 
+            margin-top: 3px; height: 12px; line-height: 12px;
         }
-        #loading { font-weight: bold; color: #582f0e; margin-bottom: 20px; }
+
+        /* PC 버전에서는 5~6열로 보이게 */
+        @media (min-width: 600px) {
+            .grid { grid-template-columns: repeat(6, 1fr); }
+        }
     </style>
 </head>
 <body>
-    <h1>🏴‍☠️ 실시간 보물 발견 현황</h1>
-    <div id="loading">데이터를 불러오는 중...</div>
+    <h1>🏴‍☠️ 실시간 보물 발견 현황 (0/30)</h1>
     <div id="status-grid" class="grid"></div>
 
     <script>
-        // 아까 복사한 구글 웹 앱 URL을 여기에 넣으세요
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxkzUG6hsfp53vS0OEO6T76_puAQyho05QOdo6GlvAuksITylRdHAA10EI1189ZuTHJ/exec";
+        const SCRIPT_URL = "여기에_구글_스크립트_배포_URL_넣기";
 
         async function fetchStatus() {
             try {
                 const response = await fetch(SCRIPT_URL);
-                const data = await response.json();
-                const grid = document.getElementById('status-grid');
-                const loading = document.getElementById('loading');
+                const fullData = await response.json();
                 
+                // 보물 30개만 딱 잘라서 가져오기
+                const data = fullData.slice(0, 30);
+                const grid = document.getElementById('status-grid');
+                let foundCount = 0;
+
                 grid.innerHTML = "";
-                loading.style.display = "none";
 
                 data.forEach((item, index) => {
                     const card = document.createElement('div');
                     card.className = 'treasure-card';
                     
-                    // 시트의 '사용시각' 컬럼에 값이 있는지 확인 (컬럼명 정확히 일치해야 함)
                     const time = item['사용시각'] || item['discovery_time']; 
                     const isFound = time && time.toString().trim() !== "";
 
-                    if (isFound) card.classList.add('found');
+                    if (isFound) {
+                        card.classList.add('found');
+                        foundCount++;
+                    }
 
                     card.innerHTML = `
-                        <img src="./images/${index + 1}.png" onerror="this.src='https://via.placeholder.com/100?text=Empty'">
-                        <div class="treasure-name">보물 ${index + 1}</div>
+                        <img src="./images/${index + 1}.png" onerror="this.src='https://via.placeholder.com/100?text=${index+1}'">
+                        <div class="treasure-name">${index + 1}번 보물</div>
                         <div class="discovery-time">${isFound ? formatTime(time) : ''}</div>
                     `;
                     grid.appendChild(card);
                 });
+
+                // 상단 제목에 현재 몇 개 찾았는지 업데이트
+                document.querySelector('h1').innerText = `🏴‍☠️ 실시간 보물 발견 현황 (${foundCount}/30)`;
+
             } catch (e) {
                 console.error("데이터 로드 실패:", e);
-                document.getElementById('loading').innerText = "데이터를 불러오지 못했습니다.";
             }
         }
 
-        // 시각 표시 형식 예쁘게 다듬기
         function formatTime(dateStr) {
             const date = new Date(dateStr);
-            if (isNaN(date)) return dateStr; // 날짜 형식이 아니면 그대로 표시
-            return date.getHours() + "시 " + date.getMinutes() + "분 " + date.getSeconds() + "초";
+            if (isNaN(date)) return dateStr; 
+            // 시:분 만 표시 (공간 절약)
+            return date.getHours() + ":" + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
         }
 
-        // 10초마다 자동 새로고침
-        setInterval(fetchStatus, 10000);
+        setInterval(fetchStatus, 10000); // 10초마다 갱신
         fetchStatus();
     </script>
 </body>
