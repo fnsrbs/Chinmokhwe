@@ -43,6 +43,35 @@
     </div>
 
     <script>
+        // 1. 이벤트 시작 시간 설정 (연, 월-1, 일, 시, 분, 초)
+// 예: 2026년 5월 20일 오전 10시 시작 (월은 0부터 시작하므로 5월은 4)
+const START_TIME = new Date(2026, 4, 15, 13, 10, 0); 
+
+const sceneEl = document.querySelector('#main-scene');
+const ui = document.querySelector('#ui');
+
+// 페이지 로드 시 시간 체크
+function checkTime() {
+    const now = new Date();
+    
+    if (now < START_TIME) {
+        // 아직 시작 전이라면 카메라 중지 및 안내 문구 표시
+        sceneEl.setAttribute("mindar-image", "autoStart: false;"); // 자동 시작 방지
+        ui.innerText = "아직 이벤트 시간이 아닙니다. 13시 10분에 만나요!";
+        ui.style.background = "red";
+        
+        // 씬 멈춤 처리
+        sceneEl.pause(); 
+        return false;
+    }
+    return true;
+}
+
+// 실행 시점에 체크
+if(checkTime()) {
+    console.log("이벤트 시작! 카메라를 가동합니다.");
+}
+        
         const sceneEl = document.querySelector('#main-scene');
         const ui = document.querySelector('#ui');
 
@@ -78,5 +107,6 @@
             sceneEl.appendChild(entity);
         }
     </script>
+    
 </body>
 </html>
